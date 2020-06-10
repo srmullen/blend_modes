@@ -23,8 +23,8 @@
 
 	// const url1 = 'https://source.unsplash.com/0DLKy4IPoc8';
 	// const url2 = 'https://source.unsplash.com/ISI5DlnYvuY';
-	const url1 = randomImageURL();
-	const url2 = randomImageURL();
+	let url1 = randomImageURL();
+	let url2 = randomImageURL();
 
 	let image1, image2;
 	let kernel;
@@ -42,7 +42,7 @@
 			image2Loaded = true;
 		}
 
-		if (image1Loaded && image2Loaded) {
+		if (image1Loaded && image2Loaded && !kernel) {
 			const canvasContainer = document.querySelector('.canvas-container');
 			const canvas = createCanvas([image1.width, image1.height], {
 				el: canvasContainer,
@@ -61,6 +61,10 @@
 
 			kernel(image1, image2);
 		}
+
+		if (kernel) {
+			kernel(image1, image2);
+		}
 	}
 
 	function onModeChange() {
@@ -76,6 +80,16 @@
 <main>
 	<div class="source-images">
 		<div class="image-container">
+			<div>
+				<button 
+					class="btn bg-red" 
+					on:click={() => {
+						url1 = randomImageURL();
+					}}
+				>
+					Random
+				</button>
+			</div>
 			<Image 
 				bind:image={image1} 
 				src={url1} 
@@ -83,6 +97,16 @@
 			/>
 		</div>
 		<div class="image-container">
+			<div>
+				<button 
+					class="btn bg-red" 
+					on:click={() => {
+						url2 = randomImageURL();
+					}}
+				>
+					Random
+				</button>
+			</div>
 			<Image 
 				bind:image={image2} 
 				src={url2} 
@@ -96,7 +120,13 @@
 	<div class='canvas-container'></div>
 </main>
 
-<style>
+<style type="text/scss">
+	$body-color: #fff;
+	$top-padding: 10px;
+	$primary-color: rgb(214, 3, 3);
+	$green: green;
+	$blue: rgb(39, 70, 247);
+
 	.source-images {
 		display: flex;
 	}
@@ -112,10 +142,72 @@
     margin: 4px;
   }
 
-	.source {
-		/* width: 100%; */
-		display: none;
+	.bg-red {
+		background-color: $primary-color;
 	}
+
+	.bg-green {
+		background-color: $green;
+	}
+
+	.bg-blue {
+		background-color: $blue;
+	}
+
+	.btn {
+		border: none;
+		border-radius: 0;
+		padding: 10px;
+		color: #fff;
+		font-family: 'Courier New', Courier, monospace;
+		font-weight: 550;
+		letter-spacing: 0.3px;
+		font-size: 14px;
+		&.bg-red {
+			&:hover {
+				background-color: lighten($color: $primary-color, $amount: 5);
+				opacity: 0.7;
+			}
+		}
+
+		&.bg-green {
+			&:hover {
+				background-color: lighten($color: $green, $amount: 5);
+				opacity: 0.7;
+			}
+		}
+
+		&.bg-blue {
+			&:hover {
+				background-color: lighten($color: $blue, $amount: 5);
+				opacity: 0.7;
+			}
+		}
+	}
+
+	// button {
+  //   text-decoration: none;
+  //   padding: 5px 15px;
+  //   margin: 10px;
+  //   border: 1px solid darkgray;
+  //   color: darkgray;
+  //   font-weight: 700;
+  //   font-size: 20px;
+  //   letter-spacing: 1.2px;
+  //   font-family: 'Courier New', Courier, monospace;
+  //   cursor: pointer;
+  //   outline: none;
+	// 	background-color: blue;
+	// 	color: white;
+	// 	min-width: 100px;
+  //   &.active {
+  //     span {
+  //       opacity: 0.7;
+  //     }
+  //     color: white;
+  //     background-color: $blue;
+  //   }
+  // }
 
 	@media (min-width: 640px) {
 		main {

@@ -19,3 +19,14 @@ export function createCanvas(
 
   return canvas;
 }
+
+export function randomImageURL() {
+  const randomString = Math.random().toString(36).substring(2);
+  return `https://picsum.photos/1333/1000?_=${randomString}`;
+}
+
+export function randomImage() {
+  // const url = `https://source.unsplash.com/random?_=${cryptoRandomString({ length: 6 })}`;
+  const url = randomImageURL();
+  return loadImage(url);
+}

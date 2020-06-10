@@ -1,8 +1,9 @@
 <script>
 	import { GPU } from 'gpu.js';
-	import { createCanvas } from './utils';
+	import { createCanvas, randomImageURL } from './utils';
 	import * as kernels from './kernels';
 	import Select from './components/Select.svelte';
+	import Image from './components/Image.svelte';
 
 	const CANVAS_STYLE = 'max-height: 75vh; max-width: 100%;';
 
@@ -20,8 +21,10 @@
 		{ name: 'Color Dodge', value: 'colorDodge' }
 	];
 
-	const url1 = 'https://source.unsplash.com/0DLKy4IPoc8';
-	const url2 = 'https://source.unsplash.com/ISI5DlnYvuY';
+	// const url1 = 'https://source.unsplash.com/0DLKy4IPoc8';
+	// const url2 = 'https://source.unsplash.com/ISI5DlnYvuY';
+	const url1 = randomImageURL();
+	const url2 = randomImageURL();
 
 	let image1, image2;
 	let kernel;
@@ -73,20 +76,16 @@
 <main>
 	<div class="source-images">
 		<div class="image-container">
-			<img 
-				bind:this={image1}
-				class="source" 
-				src={url1} alt="A Flower" 
-				crossorigin="anonymous"
+			<Image 
+				bind:image={image1} 
+				src={url1} 
 				on:load={onImageLoad}
 			/>
 		</div>
 		<div class="image-container">
-			<img 
-				bind:this={image2}
-				class="source" 
-				src={url2} alt="A Mountains" 
-				crossorigin="anonymous"
+			<Image 
+				bind:image={image2} 
+				src={url2} 
 				on:load={onImageLoad}
 			/>
 		</div>

@@ -1,5 +1,6 @@
 <script>
 	import { GPU } from 'gpu.js';
+	import throttle from 'lodash.throttle';
 	import { createCanvas, randomImageURL } from './utils';
 	import * as kernels from './kernels';
 	import Select from './components/Select.svelte';
@@ -28,10 +29,23 @@
 
 	let image1, image2;
 	let kernel;
+	let cutoff = 0.5;
 	let gpu;
 	let image1Loaded = false;
 	let image2Loaded = false;
 	let mode = MODES[0];
+
+	const runKernel = throttle(() => {
+		if (!kernel) {
+			return;
+		}
+
+		if (mode.value === 'overlay') {
+			kernel(image1, image2, cutoff);
+		} else {
+			kernel(image1, image2);
+		}
+	}, 50);
 
 	function onImageLoad(event) {
 		if (event.target === image1) {
@@ -58,13 +72,9 @@
 				graphical: true,
 				output: [image1.width, image1.height]
 			});
-
-			kernel(image1, image2);
 		}
 
-		if (kernel) {
-			kernel(image1, image2);
-		}
+		runKernel();
 	}
 
 	function onModeChange() {
@@ -73,7 +83,7 @@
 			output: [image1.width, image1.height]
 		});
 
-		kernel(image1, image2);
+		runKernel();
 	}
 </script>
 
@@ -114,8 +124,25 @@
 			/>
 		</div>
 	</div>
-	<div class="select-container">
-		<Select options={MODES} bind:selected={mode} on:change={onModeChange} />
+	<div class="inputs-container">
+		<div class="select-container">
+			<Select options={MODES} bind:selected={mode} on:change={onModeChange} />
+		</div>
+		{#if mode.value === 'overlay'}
+			<div class="slider-container">
+				<label for="cutoff-slider">Cutoff</label>
+				<input 
+					id="cutoff-slider"
+					type="range" 
+					min="0" 
+					max="1" 
+					step="0.01" 
+					bind:value={cutoff} 
+					class="slider" 
+					on:input={runKernel}
+				/>
+			</div>
+		{/if}
 	</div>
 	<div class='canvas-container'></div>
 </main>
@@ -141,6 +168,10 @@
     height: 42px;
     margin: 4px;
   }
+
+	.inputs-container {
+		display: flex;
+	}
 
 	.bg-red {
 		background-color: $primary-color;
@@ -184,30 +215,6 @@
 			}
 		}
 	}
-
-	// button {
-  //   text-decoration: none;
-  //   padding: 5px 15px;
-  //   margin: 10px;
-  //   border: 1px solid darkgray;
-  //   color: darkgray;
-  //   font-weight: 700;
-  //   font-size: 20px;
-  //   letter-spacing: 1.2px;
-  //   font-family: 'Courier New', Courier, monospace;
-  //   cursor: pointer;
-  //   outline: none;
-	// 	background-color: blue;
-	// 	color: white;
-	// 	min-width: 100px;
-  //   &.active {
-  //     span {
-  //       opacity: 0.7;
-  //     }
-  //     color: white;
-  //     background-color: $blue;
-  //   }
-  // }
 
 	@media (min-width: 640px) {
 		main {

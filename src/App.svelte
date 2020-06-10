@@ -1,16 +1,34 @@
 <script>
 	import { GPU } from 'gpu.js';
 	import { createCanvas } from './utils';
+	import * as kernels from './kernels';
+	import Select from './components/Select.svelte';
 
 	const CANVAS_STYLE = 'max-height: 75vh; max-width: 100%;';
+
+	const MODES = [
+		{ name: 'Add', value: 'add' },
+		{ name: 'Subtract', value: 'subtract' },
+		{ name: 'Multiply', value: 'multiply' },
+		{ name: 'Divide', value: 'divide' },
+		{ name: 'Darken', value: 'darken' },
+		{ name: 'Lighten', value: 'lighten' },
+		{ name: 'Screen', value: 'screen' },
+		{ name: 'Overlay', value: 'overlay' },
+		{ name: 'Color Burn', value: 'colorBurn' },
+		{ name: 'Linear Burn', value: 'linearBurn' },
+		{ name: 'Color Dodge', value: 'colorDodge' }
+	];
 
 	const url1 = 'https://source.unsplash.com/0DLKy4IPoc8';
 	const url2 = 'https://source.unsplash.com/ISI5DlnYvuY';
 
 	let image1, image2;
 	let kernel;
+	let gpu;
 	let image1Loaded = false;
 	let image2Loaded = false;
+	let mode = MODES[0];
 
 	function onImageLoad(event) {
 		if (event.target === image1) {
@@ -22,36 +40,33 @@
 		}
 
 		if (image1Loaded && image2Loaded) {
-			console.log('creating canvas');
 			const canvasContainer = document.querySelector('.canvas-container');
-			console.log(image1.width, image1.height);
 			const canvas = createCanvas([image1.width, image1.height], {
 				el: canvasContainer,
 				style: CANVAS_STYLE
 			});
 
-			const gpu = new GPU({
+			gpu = new GPU({
 				canvas,
 				context: canvas.getContext('webgl', { preserveDrawingBuffer: true })
 			});
 
-			kernel = gpu.createKernel(function kernel(img1, img2) {
-				const pixel1 = img1[this.thread.y][this.thread.x];
-				const pixel2 = img2[this.thread.y][this.thread.x];
-				const r1 = pixel1[0];
-				const g1 = pixel1[1];
-				const b1 = pixel1[2];
-				const r2 = pixel2[0];
-				const g2 = pixel2[1];
-				const b2 = pixel2[2];
-				this.color(r1 + r2, g1 + g2, b1 + b2, 1);
-			}, {
+			kernel = gpu.createKernel(kernels[mode.value], {
 				graphical: true,
 				output: [image1.width, image1.height]
 			});
 
 			kernel(image1, image2);
 		}
+	}
+
+	function onModeChange() {
+		kernel = gpu.createKernel(kernels[mode.value], {
+			graphical: true,
+			output: [image1.width, image1.height]
+		});
+
+		kernel(image1, image2);
 	}
 </script>
 
@@ -76,6 +91,9 @@
 			/>
 		</div>
 	</div>
+	<div class="select-container">
+		<Select options={MODES} bind:selected={mode} on:change={onModeChange} />
+	</div>
 	<div class='canvas-container'></div>
 </main>
 
@@ -88,6 +106,12 @@
 		margin: 15px;
 		width: 50%;
 	}
+
+	.select-container {
+    width: 300px;
+    height: 42px;
+    margin: 4px;
+  }
 
 	.source {
 		/* width: 100%; */

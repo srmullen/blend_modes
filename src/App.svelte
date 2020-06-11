@@ -5,6 +5,7 @@
 	import * as kernels from './kernels';
 	import Select from './components/Select.svelte';
 	import Image from './components/Image.svelte';
+	import UploadImage from './components/UploadImage.svelte';
 
 	const CANVAS_STYLE = 'max-height: 75vh; max-width: 100%;';
 
@@ -90,7 +91,7 @@
 <main>
 	<div class="source-images">
 		<div class="image-container">
-			<div>
+			<div class="image-buttons">
 				<button 
 					class="btn bg-red" 
 					on:click={() => {
@@ -99,6 +100,9 @@
 				>
 					Random
 				</button>
+				<UploadImage onLoad={(src) => {
+					url1 = src;
+				}} />
 			</div>
 			<Image 
 				bind:image={image1} 
@@ -107,7 +111,7 @@
 			/>
 		</div>
 		<div class="image-container">
-			<div>
+			<div class="image-buttons">
 				<button 
 					class="btn bg-red" 
 					on:click={() => {
@@ -116,6 +120,9 @@
 				>
 					Random
 				</button>
+				<UploadImage onLoad={(src) => {
+					url2 = src;
+				}} />
 			</div>
 			<Image 
 				bind:image={image2} 
@@ -171,6 +178,13 @@
 
 	.inputs-container {
 		display: flex;
+	}
+
+	.image-buttons {
+		display: flex;
+		* {
+			margin-right: 8px;
+		}
 	}
 
 	.bg-red {

@@ -21,6 +21,7 @@
     "svelte-preprocess": "^3.9.6"
   },
   "dependencies": {
+    "@rollup/plugin-html": "^0.2.0",
     "crypto-random-string": "^3.2.0",
     "dat.gui": "^0.7.7",
     "gpu.js": "^2.9.4",

@@ -22,6 +22,7 @@
     "dat.gui": "^0.7.7",
     "gpu.js": "^2.9.4",
     "lodash.throttle": "^4.1.1",
-    "sirv-cli": "^0.4.4"
+    "sirv-cli": "^0.4.4",
+    "vanilla-picker": "^2.10.1"
   }
 }

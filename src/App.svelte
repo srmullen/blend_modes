@@ -6,6 +6,7 @@
 	import Select from './components/Select.svelte';
 	import Image from './components/Image.svelte';
 	import UploadImage from './components/UploadImage.svelte';
+	import ColorLayer from './components/ColorLayer.svelte';
 
 	const CANVAS_STYLE = 'max-height: 75vh; max-width: 100%;';
 
@@ -86,6 +87,20 @@
 
 		runKernel();
 	}
+
+	async function createBlendLayer(width, height, color) {
+		const canvas = document.createElement('canvas');
+		canvas.width = width;
+		canvas.height = height;
+		canvas.style = 'display: none;';
+		const ctx = canvas.getContext('2d');
+		ctx.fillStyle = `rgb(${color[0]}, ${color[1]}, ${color[2]})`;
+		ctx.fillRect(0, 0, width, height);
+		const img = document.createElement('img');
+		// img.src = await canvas.toDataURL('image/png');
+		// return img;
+		return await canvas.toDataURL('image/png');
+	}
 </script>
 
 <main>
@@ -103,6 +118,13 @@
 				<UploadImage onLoad={(src) => {
 					url1 = src;
 				}} />
+				<div class="color-picker">
+					<ColorLayer on:change={throttle(async (event) => {
+						const color = event.detail;
+						const src = await createBlendLayer(image1.width, image1.height, color.rgba);
+						url1 = src;
+					}, 50)} />
+				</div>
 			</div>
 			<Image 
 				bind:image={image1} 
@@ -123,6 +145,13 @@
 				<UploadImage onLoad={(src) => {
 					url2 = src;
 				}} />
+				<div class="color-picker">
+					<ColorLayer on:change={throttle(async (event) => {
+						const color = event.detail;
+						const src = await createBlendLayer(image1.width, image1.height, color.rgba);
+						url2 = src;
+					}, 50)} />
+				</div>
 			</div>
 			<Image 
 				bind:image={image2} 
@@ -185,6 +214,11 @@
 		* {
 			margin-right: 8px;
 		}
+	}
+
+	.color-picker {
+		margin-left: 8px;
+		margin-top: -2px;
 	}
 
 	.bg-red {

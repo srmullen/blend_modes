@@ -5,6 +5,7 @@ import replace from '@rollup/plugin-replace';
 import html from '@rollup/plugin-html';
 import livereload from 'rollup-plugin-livereload';
 import { terser } from 'rollup-plugin-terser';
+import copy from 'rollup-plugin-copy';
 import autoPreprocess from 'svelte-preprocess';
 
 const production = !process.env.ROLLUP_WATCH;
@@ -22,8 +23,7 @@ export default {
 	plugins: [
 		html({
 			title: 'Blend Modes',
-			template: ({ attributes, bundle, files, publicPath, title }) => `
-<!DOCTYPE html>
+			template: ({ attributes, bundle, files, publicPath, title }) => `<!DOCTYPE html>
 <html lang="en">
 <head>
 	<meta charset='utf-8'>
@@ -32,7 +32,7 @@ export default {
 
 	<title>${title}</title>
 
-	<link rel='icon' type='image/png' href='favicon.png'>
+	<link rel='icon' type='image/png' href='favicon.ico'>
 	<link rel='stylesheet' href='global.css'>
 	<link rel='stylesheet' href='bundle.css'>
 
@@ -42,6 +42,12 @@ export default {
 </body>
 </html>
 			`
+		}),
+		copy({
+			targets: [
+				{ src: 'public/favicon.ico', dest: 'dist/' },
+				{ src: 'public/global.css', dest: 'dist/' }
+			]
 		}),
 		svelte({
 			// enable run-time checks when not in production

@@ -103,6 +103,12 @@
 	}
 </script>
 
+<svelte:head>
+	{#if process.env.production}
+		<base href="https://srmullen.github.io/blend_modes/">
+	{/if}
+</svelte:head>
+
 <main>
 	<div class="source-images">
 		<div class="image-container">

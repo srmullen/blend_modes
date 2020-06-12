@@ -1,6 +1,7 @@
 import svelte from 'rollup-plugin-svelte';
 import resolve from '@rollup/plugin-node-resolve';
 import commonjs from '@rollup/plugin-commonjs';
+import replace from '@rollup/plugin-replace';
 import livereload from 'rollup-plugin-livereload';
 import { terser } from 'rollup-plugin-terser';
 import autoPreprocess from 'svelte-preprocess';
@@ -25,6 +26,14 @@ export default {
 				css.write('public/build/bundle.css');
 			},
 			preprocess: autoPreprocess()
+		}),
+
+		replace({
+			process: JSON.stringify({
+				env: {
+					production
+				}
+			})
 		}),
 
 		// If you have external dependencies installed from

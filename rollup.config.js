@@ -21,30 +21,31 @@ export default {
 		file: 'dist/bundle.js'
 	},
 	plugins: [
-		html({
-			title: 'Blend Modes',
-			template: ({ attributes, bundle, files, publicPath, title }) => `<!DOCTYPE html>
-<html lang="en">
-<head>
-	<meta charset='utf-8'>
-	<meta name='viewport' content='width=device-width,initial-scale=1'>
-	<base href="${production ? GITHUB_URL : '/'}">
+// 		html({
+// 			title: 'Blend Modes',
+// 			template: ({ attributes, bundle, files, publicPath, title }) => `<!DOCTYPE html>
+// <html lang="en">
+// <head>
+// 	<meta charset='utf-8'>
+// 	<meta name='viewport' content='width=device-width,initial-scale=1'>
+// 	<base href="${production ? GITHUB_URL : '/'}">
 
-	<title>${title}</title>
+// 	<title>${title}</title>
 
-	<link rel='icon' type='image/png' href='favicon.ico'>
-	<link rel='stylesheet' href='global.css'>
-	<link rel='stylesheet' href='bundle.css'>
+// 	<link rel='icon' type='image/png' href='favicon.ico'>
+// 	<link rel='stylesheet' href='global.css'>
+// 	<link rel='stylesheet' href='bundle.css'>
 
-	<script defer src='bundle.js'></script>
-</head>
-<body>
-</body>
-</html>
-			`
-		}),
+// 	<script defer src='bundle.js'></script>
+// </head>
+// <body>
+// </body>
+// </html>
+// 			`
+// 		}),
 		copy({
 			targets: [
+				{ src: 'public/index.html', dest: 'dist/'},
 				{ src: 'public/favicon.ico', dest: 'dist/' },
 				{ src: 'public/global.css', dest: 'dist/' }
 			]

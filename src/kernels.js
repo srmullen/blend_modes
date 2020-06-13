@@ -5,7 +5,7 @@ export function add(img1, img2) {
     pix1[0] + pix2[0],
     pix1[1] + pix2[1],
     pix1[2] + pix2[2],
-    255 // alhpa value seems to make no difference.
+    255
   );
 }
 
@@ -140,6 +140,27 @@ export function colorDodge(img1, img2) {
     pix2[2] / (1 - pix1[2]),
     1
   );
+}
+
+/**
+ * Similar to disolve mode except no dither pattern is created. Instead random values are generated each time it is
+ * run. If the random value is less than the given cutoff the component from the first channel will be used, otherwise
+ * the second pixel component will be used.
+ * @param {Image} img1 
+ * @param {Image} img2 
+ * @param {number} cutoff 
+ */
+export function random_component(img1, img2, cutoff) {
+  const pix1 = img1[this.thread.y][this.thread.x];
+  const pix2 = img2[this.thread.y][this.thread.x];
+  
+  const r = Math.random() < cutoff ? pix1[0] : pix2[0];
+  const g = Math.random() < cutoff ? pix1[1] : pix2[1];
+  const b = Math.random() < cutoff ? pix1[2] : pix2[2];
+  this.color(r, g, b, 1);
+
+  // const pix = Math.random() < cutoff ? pix1 : pix2;
+  // this.color(pix[0], pix[1], pix[2]);
 }
 
 export function createImageKernel(gpu, fn, output, ...args) {

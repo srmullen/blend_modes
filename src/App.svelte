@@ -21,7 +21,8 @@
 		{ name: 'Overlay', value: 'overlay' },
 		{ name: 'Color Burn', value: 'colorBurn' },
 		{ name: 'Linear Burn', value: 'linearBurn' },
-		{ name: 'Color Dodge', value: 'colorDodge' }
+		{ name: 'Color Dodge', value: 'colorDodge' },
+		{ name: 'Random', value: 'random_component' }
 	];
 
 	// const url1 = 'https://source.unsplash.com/0DLKy4IPoc8';
@@ -42,7 +43,7 @@
 			return;
 		}
 
-		if (mode.value === 'overlay') {
+		if (mode.value === 'overlay' || mode.value === 'random_component') {
 			kernel(image1, image2, cutoff);
 		} else {
 			kernel(image1, image2);
@@ -164,7 +165,7 @@
 		<div class="select-container">
 			<Select options={MODES} bind:selected={mode} on:change={onModeChange} />
 		</div>
-		{#if mode.value === 'overlay'}
+		{#if mode.value === 'overlay' || mode.value === 'random_component'}
 			<div class="slider-container">
 				<label for="cutoff-slider">Cutoff</label>
 				<input 

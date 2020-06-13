@@ -40,7 +40,30 @@
 	let gpu;
 	let image1Loaded = false;
 	let image2Loaded = false;
-	let mode = MODES[0];
+	let mode = getModeFromURLHash();
+
+	function getModeFromURLHash() {
+		if (window.location.hash) {
+			const hash = window.location.hash.slice(1);
+			for (let i = 0; i < MODES.length; i++) {
+				const mode = MODES[i];
+				console.log(mode, hash);
+				if (mode.value.toLowerCase() === hash) {
+					return mode;
+				}
+			}
+			setURLHash();
+			return MODES[0];
+		} else {
+			return MODES[0];
+		}
+	}
+
+	function setURLHash(value) {
+		if (value) {
+			window.history.replaceState(undefined, undefined, `#${value}`);
+		}
+	}
 
 	const runKernel = throttle(() => {
 		if (!kernel) {
@@ -85,6 +108,7 @@
 	}
 
 	function onModeChange() {
+		setURLHash(mode.value);
 		kernel = gpu.createKernel(kernels[mode.value], {
 			graphical: true,
 			output: [image1.width, image1.height]

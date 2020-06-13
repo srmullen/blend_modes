@@ -19,10 +19,14 @@
 		{ name: 'Lighten', value: 'lighten' },
 		{ name: 'Screen', value: 'screen' },
 		{ name: 'Overlay', value: 'overlay' },
+		{ name: 'Hard Light', value: 'hardLight' },
 		{ name: 'Color Burn', value: 'colorBurn' },
 		{ name: 'Linear Burn', value: 'linearBurn' },
 		{ name: 'Color Dodge', value: 'colorDodge' },
-		{ name: 'Random', value: 'random_component' }
+		{ name: 'Random', value: 'random_component' },
+		{ name: 'Difference', value: 'difference' },
+		{ name: 'Soft Light', value: 'softLight' },
+		{ name: 'Exclusion', value: 'exclusion' }
 	];
 
 	// const url1 = 'https://source.unsplash.com/0DLKy4IPoc8';

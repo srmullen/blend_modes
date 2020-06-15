@@ -234,12 +234,47 @@ export function difference(img1, img2) {
 export function exclusion(img1, img2) {
   const pix1 = img1[this.thread.y][this.thread.x];
   const pix2 = img2[this.thread.y][this.thread.x];
-  //Cb + Cs - 2 x Cb x Cs
   this.color(
     pix1[0] + pix2[0] - 2 * pix1[0] * pix2[0],
     pix1[1] + pix2[1] - 2 * pix1[1] * pix2[1],
     pix1[2] + pix2[2] - 2 * pix1[2] * pix2[2]
   );
+}
+
+export function hue(img1, img2) {
+  const pix1 = img1[this.thread.y][this.thread.x];
+  const pix2 = img2[this.thread.y][this.thread.x];
+  const luminosity = lum(pix1);
+  const saturation = sat(pix1);
+  const newSat = setSat(pix2, saturation);
+  const pix = setLum(newSat, luminosity);
+  // const pix = setLum(setSat(pix2, sat(pix1)), lum(pix1));
+  
+  // this.color(luminosity, luminosity, luminosity);
+  // this.color(saturation, saturation, saturation);
+  // this.color(newSat[0], newSat[1], newSat[2]);
+  this.color(pix[0], pix[1], pix[2]);
+}
+
+export function saturation(img1, img2) {
+  const pix1 = img1[this.thread.y][this.thread.x];
+  const pix2 = img2[this.thread.y][this.thread.x];
+  const pix = setLum(setSat(pix1, sat(pix2)), lum(pix1));
+  this.color(pix[0], pix[1], pix[2]);
+}
+
+export function color(img1, img2) {
+  const pix1 = img1[this.thread.y][this.thread.x];
+  const pix2 = img2[this.thread.y][this.thread.x];
+  const pix = setLum(pix2, lum(pix1));
+  this.color(pix[0], pix[1], pix[2]);
+}
+
+export function luminosity(img1, img2) {
+  const pix1 = img1[this.thread.y][this.thread.x];
+  const pix2 = img2[this.thread.y][this.thread.x];
+  const pix = setLum(pix1, lum(pix2));
+  this.color(pix[0], pix[1], pix[2]);
 }
 
 /**

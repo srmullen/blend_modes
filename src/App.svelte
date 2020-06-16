@@ -101,163 +101,14 @@
 				context: canvas.getContext('webgl', { preserveDrawingBuffer: true })
 			});
 
-			gpu.addFunction(function min(pix) {
-				return Math.min(pix[0], Math.min(pix[1], pix[2]));
-			});
-
-			gpu.addFunction(function max(pix) {
-				return Math.max(pix[0], Math.max(pix[1], pix[2]));
-			});
-
-			// return the [min, mid, max] indices
-			gpu.addFunction(function mmm(pix) {
-				let min = 0;
-				let mid = 0;
-				let max = 0;
-
-				if (pix[0] < pix[1] && pix[0] < pix[2]) {
-					min = 0;
-					if (pix[1] > pix[2]) {
-						max = 1;
-						mid = 2;
-					} else {
-						max = 2;
-						mid = 1;
-					}
-				} else if (pix[1] < pix[0] && pix[1] < pix[2]) {
-					min = 1;
-					if (pix[0] > pix[2]) {
-						max = 0;
-						mid = 2;
-					} else {
-						max = 2;
-						mid = 0;
-					}
-				} else {
-					min = 2;
-					if (pix[0] > pix[1]) {
-						max = 0;
-						mid = 1;
-					} else {
-						max = 1;
-						mid = 0;
-					}
-				}
-				return [min, mid, max];
-			});
-
-			// Add functions
-			gpu.addFunction(function lum(pix) {
-				return 0.3 * pix[0] + 0.59 * pix[1] + 0.11 * pix[2];
-			});
-
-			gpu.addFunction(function clipColor(pix) {
-				const l = lum(pix);
-				const n = min(pix);
-				const x = max(pix);
-
-				let c = [pix[0], pix[1], pix[2], 1];
-
-				if (n < 0) {
-					c[0] = l + (((pix[0] - l) * l) / (l - n));
-					c[1] = l + (((pix[1] - l) * l) / (l - n));
-					c[2] = l + (((pix[2] - l) * l) / (l - n));
-				}
-                      
-        if (x > 1) {
-					c[0] = l + (((pix[0] - l) * (1 - l)) / (x - l));
-					c[1] = l + (((pix[1] - l) * (1 - l)) / (x - l));
-					c[2] = l + (((pix[2] - l) * (1 - l)) / (x - l));
-				}
-        
-				return c;
-			});
-
-
-			gpu.addFunction(function sat(pix) {
-				return max(pix) - min(pix);
-			})
-
-			gpu.addFunction(function setLum(pix, l) {
-				const d = l - lum(pix);
-				return clipColor([
-					pix[0] + d,
-					pix[1] + d,
-					pix[2] + d,
-					1
-				]);
-			});
-
-			gpu.addFunction(function setSat(pix, s) {
-				const [min, mid, max] = mmm(pix);
-				let c = [pix[0], pix[1], pix[2], 1];
-				// if (pix[max] > pix[min]) {
-				let c_mid = 0;
-				if (!(pix[0] === pix[1] && pix[0] === pix[2])) {
-					// calculate c_mid
-					if (pix[0] < pix[1] && pix[0] < pix[2]) {
-						if (pix[1] > pix[2]) {
-							c_mid = (((pix[2] - pix[0]) * s) / (pix[1] - pix[0]));
-						} else {
-							c_mid = (((pix[1] - pix[0]) * s) / (pix[2] - pix[0]));
-						}
-					} else if (pix[1] < pix[0] && pix[1] < pix[2]) {
-						if (pix[0] > pix[2]) {
-							c_mid = (((pix[2] - pix[1]) * s) / (pix[0] - pix[1]));
-						} else {
-							c_mid = (((pix[0] - pix[1]) * s) / (pix[2] - pix[1]));
-						}
-					} else {
-						if (pix[0] > pix[1]) {
-							c_mid = (((pix[1] - pix[2]) * s) / (pix[0] - pix[2]));
-						} else {
-							c_mid = (((pix[0] - pix[2]) * s) / (pix[1] - pix[2]));
-						}
-					}
-
-					// Set Values
-					if (mid === 0) {
-						c[0] = c_mid;
-					} else if (mid === 1) {
-						c[1] = c_mid;
-					} else if (mid === 2) {
-						c[2] = c_mid;
-					}
-					
-					if (max === 0) {
-						c[0] = s;
-					} else if (max === 1) {
-						c[1] = s;
-					} else if (max === 2) {
-						c[2] = s;
-					}
-				} else {
-					if (mid === 0) {
-						c[0] = 0;
-					} else if (mid === 1) {
-						c[1] = 0;
-					} else if (mid === 2) {
-						c[2] = 0;
-					}
-					
-					if (max === 0) {
-						c[0] = 0;
-					} else if (max === 1) {
-						c[1] = 0;
-					} else if (max === 2) {
-						c[2] = 0;
-					}
-				}
-				
-				if (min === 0) {
-					c[0] = 0;
-				} else if (min === 1) {
-					c[1] = 0;
-				} else if (min === 2) {
-					c[2] = 0;
-				}
-				return c;
-			}, {
+			gpu.addFunction(kernels.min);
+			gpu.addFunction(kernels.max);
+			gpu.addFunction(kernels.mmm);
+			gpu.addFunction(kernels.lum);
+			gpu.addFunction(kernels.clipColor);
+			gpu.addFunction(kernels.sat);
+			gpu.addFunction(kernels.setLum);
+			gpu.addFunction(kernels.setSat, {
 				argumentTypes: { pix: 'Array(4)', s: 'Number' }
 			});
 
@@ -372,10 +223,6 @@
 			</div>
 		{/if}
 	</div>
-	<!-- <div class="css-blends">
-		<img src={url1} class="backdrop" alt="image1" crossorigin="anonymous" />
-		<img src={url2} class="source" alt="image2" crossorigin="anonymous" />
-	</div> -->
 	<div class='canvas-container'></div>
 </main>
 
@@ -385,15 +232,6 @@
 	$primary-color: rgb(214, 3, 3);
 	$green: green;
 	$blue: rgb(39, 70, 247);
-
-	// .css-blends {
-	// 	position: relative;
-	// 	height: 1000px;
-	// 	img {
-	// 		position: absolute;
-	// 		mix-blend-mode: color;
-	// 	}
-	// }
 
 	.source-images {
 		display: flex;

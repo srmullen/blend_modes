@@ -1,3 +1,167 @@
+/**
+ * Functions
+ **/
+
+export function min(pix) {
+  return Math.min(pix[0], Math.min(pix[1], pix[2]));
+}
+
+export function max(pix) {
+  return Math.max(pix[0], Math.max(pix[1], pix[2]));
+}
+
+// return the [min, mid, max] indices
+export function mmm(pix) {
+  let min = 0;
+  let mid = 0;
+  let max = 0;
+
+  if (pix[0] < pix[1] && pix[0] < pix[2]) {
+    min = 0;
+    if (pix[1] > pix[2]) {
+      max = 1;
+      mid = 2;
+    } else {
+      max = 2;
+      mid = 1;
+    }
+  } else if (pix[1] < pix[0] && pix[1] < pix[2]) {
+    min = 1;
+    if (pix[0] > pix[2]) {
+      max = 0;
+      mid = 2;
+    } else {
+      max = 2;
+      mid = 0;
+    }
+  } else {
+    min = 2;
+    if (pix[0] > pix[1]) {
+      max = 0;
+      mid = 1;
+    } else {
+      max = 1;
+      mid = 0;
+    }
+  }
+  return [min, mid, max];
+}
+
+export function lum(pix) {
+  return 0.3 * pix[0] + 0.59 * pix[1] + 0.11 * pix[2];
+}
+
+export function clipColor(pix) {
+  const l = lum(pix);
+  const n = min(pix);
+  const x = max(pix);
+
+  let c = [pix[0], pix[1], pix[2], 1];
+
+  if (n < 0) {
+    c[0] = l + (((pix[0] - l) * l) / (l - n));
+    c[1] = l + (((pix[1] - l) * l) / (l - n));
+    c[2] = l + (((pix[2] - l) * l) / (l - n));
+  }
+
+  if (x > 1) {
+    c[0] = l + (((pix[0] - l) * (1 - l)) / (x - l));
+    c[1] = l + (((pix[1] - l) * (1 - l)) / (x - l));
+    c[2] = l + (((pix[2] - l) * (1 - l)) / (x - l));
+  }
+
+  return c;
+}
+
+export function sat(pix) {
+  return max(pix) - min(pix);
+}
+
+export function setLum(pix, l) {
+  const d = l - lum(pix);
+  return clipColor([
+    pix[0] + d,
+    pix[1] + d,
+    pix[2] + d,
+    1
+  ]);
+}
+
+export function setSat(pix, s) {
+  const [min, mid, max] = mmm(pix);
+  let c = [pix[0], pix[1], pix[2], 1];
+  // if (pix[max] > pix[min]) {
+  let c_mid = 0;
+  if (!(pix[0] === pix[1] && pix[0] === pix[2])) {
+    // calculate c_mid
+    if (pix[0] < pix[1] && pix[0] < pix[2]) {
+      if (pix[1] > pix[2]) {
+        c_mid = (((pix[2] - pix[0]) * s) / (pix[1] - pix[0]));
+      } else {
+        c_mid = (((pix[1] - pix[0]) * s) / (pix[2] - pix[0]));
+      }
+    } else if (pix[1] < pix[0] && pix[1] < pix[2]) {
+      if (pix[0] > pix[2]) {
+        c_mid = (((pix[2] - pix[1]) * s) / (pix[0] - pix[1]));
+      } else {
+        c_mid = (((pix[0] - pix[1]) * s) / (pix[2] - pix[1]));
+      }
+    } else {
+      if (pix[0] > pix[1]) {
+        c_mid = (((pix[1] - pix[2]) * s) / (pix[0] - pix[2]));
+      } else {
+        c_mid = (((pix[0] - pix[2]) * s) / (pix[1] - pix[2]));
+      }
+    }
+
+    // Set Values
+    if (mid === 0) {
+      c[0] = c_mid;
+    } else if (mid === 1) {
+      c[1] = c_mid;
+    } else if (mid === 2) {
+      c[2] = c_mid;
+    }
+
+    if (max === 0) {
+      c[0] = s;
+    } else if (max === 1) {
+      c[1] = s;
+    } else if (max === 2) {
+      c[2] = s;
+    }
+  } else {
+    if (mid === 0) {
+      c[0] = 0;
+    } else if (mid === 1) {
+      c[1] = 0;
+    } else if (mid === 2) {
+      c[2] = 0;
+    }
+
+    if (max === 0) {
+      c[0] = 0;
+    } else if (max === 1) {
+      c[1] = 0;
+    } else if (max === 2) {
+      c[2] = 0;
+    }
+  }
+
+  if (min === 0) {
+    c[0] = 0;
+  } else if (min === 1) {
+    c[1] = 0;
+  } else if (min === 2) {
+    c[2] = 0;
+  }
+  return c;
+}
+
+/**
+* Kernels
+**/
+
 export function add(img1, img2) {
   const pix1 = img1[this.thread.y][this.thread.x];
   const pix2 = img2[this.thread.y][this.thread.x];
@@ -298,13 +462,13 @@ export function random_component(img1, img2, cutoff) {
   // this.color(pix[0], pix[1], pix[2]);
 }
 
-export function createImageKernel(gpu, fn, output, ...args) {
-  const kernel = gpu.createKernel(fn)
-    .setGraphical(true)
-    .setOutput(output)
-  // .setOutput([image1.width, image1.height]);
+// export function createImageKernel(gpu, fn, output, ...args) {
+//   const kernel = gpu.createKernel(fn)
+//     .setGraphical(true)
+//     .setOutput(output)
+//   // .setOutput([image1.width, image1.height]);
 
-  // kernel(image1, image2);
-  kernel(...args)
-  return kernel.getPixels();
-}
+//   // kernel(image1, image2);
+//   kernel(...args)
+//   return kernel.getPixels();
+// }

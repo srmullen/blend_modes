@@ -1,7 +1,7 @@
 <script>
 	import { GPU } from 'gpu.js';
 	import throttle from 'lodash.throttle';
-	import { createCanvas, randomImageURL } from './utils';
+	import { createCanvas, randomImageURL, saveImage } from './utils';
 	import * as kernels from './kernels';
 	import Select from './components/Select.svelte';
 	import Image from './components/Image.svelte';
@@ -33,13 +33,14 @@
 		{ name: 'Color', value: 'color' }
 	];
 
-	const url1 = 'https://source.unsplash.com/0DLKy4IPoc8';
-	const url2 = 'https://source.unsplash.com/ISI5DlnYvuY';
+	let url1 = 'https://source.unsplash.com/0DLKy4IPoc8';
+	let url2 = 'https://source.unsplash.com/ISI5DlnYvuY';
 	// let url1 = randomImageURL();
 	// let url2 = randomImageURL();
 
 	let image1, image2;
 	let kernel;
+	let canvas;
 	let cutoff = 0.5;
 	let gpu;
 	let image1Loaded = false;
@@ -91,7 +92,7 @@
 
 		if (image1Loaded && image2Loaded && !kernel) {
 			const canvasContainer = document.querySelector('.canvas-container');
-			const canvas = createCanvas([image1.width, image1.height], {
+			canvas = createCanvas([image1.width, image1.height], {
 				el: canvasContainer,
 				style: CANVAS_STYLE
 			});
@@ -140,116 +141,145 @@
 		ctx.fillStyle = `rgb(${color[0]}, ${color[1]}, ${color[2]})`;
 		ctx.fillRect(0, 0, width, height);
 		const img = document.createElement('img');
-		// img.src = await canvas.toDataURL('image/png');
-		// return img;
 		return await canvas.toDataURL('image/png');
 	}
 </script>
 
 <main>
-	<div class="source-images">
-		<div class="image-container">
-			<div class="image-buttons">
-				<button 
-					class="btn bg-red" 
-					on:click={() => {
-						url1 = randomImageURL();
-					}}
-				>
-					Random
-				</button>
-				<UploadImage onLoad={(src) => {
-					url1 = src;
-				}} />
-				<div class="color-picker">
-					<ColorLayer on:change={throttle(async (event) => {
-						const color = event.detail;
-						const src = await createBlendLayer(image1.width, image1.height, color.rgba);
+	<h1>Blend Modes</h1>
+	<div class="container">
+		<div class="source-images">
+			<div class="image-container">
+				<div class="image-buttons">
+					<div>
+						<button 
+							class="btn bg-red" 
+							on:click={() => {
+								url1 = randomImageURL();
+							}}
+						>
+							Random
+						</button>
+					</div>
+					<UploadImage onLoad={(src) => {
 						url1 = src;
-					}, 50)} />
+					}} />
+					<div class="color-picker">
+						<ColorLayer on:change={throttle(async (event) => {
+							const color = event.detail;
+							const src = await createBlendLayer(image1.width, image1.height, color.rgba);
+							url1 = src;
+						}, 50)} />
+					</div>
 				</div>
-			</div>
-			<Image 
-				bind:image={image1} 
-				src={url1} 
-				on:load={onImageLoad}
-			/>
-		</div>
-		<div class="image-container">
-			<div class="image-buttons">
-				<button 
-					class="btn bg-red" 
-					on:click={() => {
-						url2 = randomImageURL();
-					}}
-				>
-					Random
-				</button>
-				<UploadImage onLoad={(src) => {
-					url2 = src;
-				}} />
-				<div class="color-picker">
-					<ColorLayer on:change={throttle(async (event) => {
-						const color = event.detail;
-						const src = await createBlendLayer(image1.width, image1.height, color.rgba);
-						url2 = src;
-					}, 50)} />
-				</div>
-			</div>
-			<Image 
-				bind:image={image2} 
-				src={url2} 
-				on:load={onImageLoad}
-			/>
-		</div>
-	</div>
-	<div class="inputs-container">
-		<div class="select-container">
-			<Select options={MODES} bind:selected={mode} on:change={onModeChange} />
-		</div>
-		{#if mode.value === 'overlay' || mode.value === 'random_component'}
-			<div class="slider-container">
-				<label for="cutoff-slider">Cutoff</label>
-				<input 
-					id="cutoff-slider"
-					type="range" 
-					min="0" 
-					max="1" 
-					step="0.01" 
-					bind:value={cutoff} 
-					class="slider" 
-					on:input={runKernel}
+				<Image 
+					bind:image={image1} 
+					src={url1} 
+					on:load={onImageLoad}
 				/>
 			</div>
-		{/if}
+			<div class="image-container">
+				<div class="image-buttons">
+					<div>
+						<button 
+							class="btn bg-red" 
+							on:click={() => {
+								url2 = randomImageURL();
+							}}
+						>
+							Random
+						</button>
+					</div>
+					<UploadImage onLoad={(src) => {
+						url2 = src;
+					}} />
+					<div class="color-picker">
+						<ColorLayer on:change={throttle(async (event) => {
+							const color = event.detail;
+							const src = await createBlendLayer(image1.width, image1.height, color.rgba);
+							url2 = src;
+						}, 50)} />
+					</div>
+				</div>
+				<Image 
+					bind:image={image2} 
+					src={url2} 
+					on:load={onImageLoad}
+				/>
+			</div>
+		</div>
+		<div>
+			<div class="inputs-container">
+				<div class="select-container">
+					<Select options={MODES} bind:selected={mode} on:change={onModeChange} />
+				</div>
+				{#if mode.value === 'overlay' || mode.value === 'random_component'}
+					<div class="slider-container">
+						<label for="cutoff-slider">Cutoff</label>
+						<input 
+							id="cutoff-slider"
+							type="range" 
+							min="0" 
+							max="1" 
+							step="0.01" 
+							bind:value={cutoff} 
+							class="slider" 
+							on:input={runKernel}
+						/>
+					</div>
+				{/if}
+				<div class="download">
+					<button on:click={() => saveImage(canvas)} class="btn bg-blue">Download</button>
+				</div>
+			</div>
+			<div class='canvas-container'></div>
+		</div>
 	</div>
-	<div class='canvas-container'></div>
 </main>
 
 <style type="text/scss">
+
+	:global(body) {
+		padding: 28px;
+	}
+
 	$body-color: #fff;
 	$top-padding: 10px;
 	$primary-color: rgb(214, 3, 3);
 	$green: green;
 	$blue: rgb(39, 70, 247);
 
-	.source-images {
+	.container {
 		display: flex;
 	}
 
+	.download {
+		padding-top: 12px;
+	}
+
+	.source-images {
+		display: flex;
+		flex-direction: column;
+		justify-content: space-around;
+		width: 38.2%;
+		min-width: 250px;
+	}
+
 	.image-container {
-		margin: 15px;
-		width: 50%;
+		margin: 16px 16px 16px 0;
+
 	}
 
 	.select-container {
     width: 300px;
-    height: 42px;
-    margin: 4px;
+    height: 37px;
+		margin: 8px;
+		margin-left: 0;
   }
 
 	.inputs-container {
 		display: flex;
+		justify-content: space-between;
 	}
 
 	.image-buttons {
@@ -277,6 +307,7 @@
 	}
 
 	.btn {
+		margin: 0;
 		border: none;
 		border-radius: 0;
 		padding: 10px;

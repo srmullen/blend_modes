@@ -3,6 +3,23 @@
   export let selected;
 </script>
 
+<span class="select-container">
+  <select bind:value={selected} name="shipping-country" on:change on:blur>
+    {#each options as option}
+      {#if typeof option === 'string'}
+        <option value={option}>{option}</option>
+      {:else}
+        <option value={option}>{option.name}</option>
+      {/if}
+    {/each}
+  </select>
+  {#if typeof selected === 'string'}
+    <span class="value">{selected}</span>
+  {:else}
+    <span class="value">{selected.name}</span>
+  {/if}
+</span>
+
 <style type="text/scss">
   @mixin arrow-up {
     width: 0;
@@ -44,39 +61,22 @@
       content: "";
       position: absolute;
       color: #999;
-      line-height: 37px;
+      line-height: 42px;
       right: 8px;
       font-size: 7px;
-      top: 15px;
+      top: 18px;
       // @include arrow-up();
       @include arrow-down();
     }
 
     .value {
       left: 0;
-      height: 37px;
-      line-height: 37px;
-      padding-left: 4px;
+      height: 42px;
+      line-height: 42px;
+      padding-left: 8px;
       padding-right: 4px;
       position: absolute;
       text-overflow: ellipsis;
     }
   }
 </style>
-
-<span class="select-container">
-  <select bind:value={selected} name="shipping-country" on:change on:blur>
-    {#each options as option}
-      {#if typeof option === 'string'}
-        <option value={option}>{option}</option>
-      {:else}
-        <option value={option}>{option.name}</option>
-      {/if}
-    {/each}
-  </select>
-  {#if typeof selected === 'string'}
-    <span class="value">{selected}</span>
-  {:else}
-    <span class="value">{selected.name}</span>
-  {/if}
-</span>

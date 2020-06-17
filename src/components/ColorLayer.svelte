@@ -1,6 +1,7 @@
 <script>
   import { onMount, createEventDispatcher } from 'svelte';
   import Picker from 'vanilla-picker';
+  import Button from './Button.svelte';
 
   const dispatch = createEventDispatcher();
 
@@ -8,12 +9,12 @@
   let picker;
 
   onMount(() => {
-    picker = new Picker(parent);
+    picker = new Picker({ 
+      parent,
+      alpha: false
+    });
 
     picker.onChange = (color) => {
-      // getComputedStyle(document.documentElement).getPropertyValue('--selected-color');
-
-      // document.documentElement.style.setProperty('--selected-color', color.hex);
       parent.style.setProperty('--selected-color', color.hex);
 
       dispatch('change', color);
@@ -21,7 +22,7 @@
   });
 </script>
 
-<div class="parent" bind:this={parent}></div>
+<Button color='blue' bind:button={parent}>Color</Button>
 
 <style>
   .parent {

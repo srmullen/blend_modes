@@ -7,36 +7,14 @@
 	import Image from './components/Image.svelte';
 	import UploadImage from './components/UploadImage.svelte';
 	import ColorLayer from './components/ColorLayer.svelte';
+	import Button from './components/Button.svelte';
+	import { MODES, CANVAS_STYLE } from "./constants";
+	
 
-	const CANVAS_STYLE = 'max-height: 75vh; max-width: 100%;';
-
-	const MODES = [
-		{ name: 'Add', value: 'add' },
-		{ name: 'Subtract', value: 'subtract' },
-		{ name: 'Multiply', value: 'multiply' },
-		{ name: 'Divide', value: 'divide' },
-		{ name: 'Darken', value: 'darken' },
-		{ name: 'Lighten', value: 'lighten' },
-		{ name: 'Screen', value: 'screen' },
-		{ name: 'Overlay', value: 'overlay' },
-		{ name: 'Hard Light', value: 'hardLight' },
-		{ name: 'Color Burn', value: 'colorBurn' },
-		{ name: 'Linear Burn', value: 'linearBurn' },
-		{ name: 'Color Dodge', value: 'colorDodge' },
-		{ name: 'Random', value: 'random_component' },
-		{ name: 'Difference', value: 'difference' },
-		{ name: 'Soft Light', value: 'softLight' },
-		{ name: 'Exclusion', value: 'exclusion' },
-		{ name: 'Hue', value: 'hue' },
-		{ name: 'Saturation', value: 'saturation' },
-		{ name: 'Luminosity', value: 'luminosity' },
-		{ name: 'Color', value: 'color' }
-	];
-
-	let url1 = 'https://source.unsplash.com/0DLKy4IPoc8';
-	let url2 = 'https://source.unsplash.com/ISI5DlnYvuY';
-	// let url1 = randomImageURL();
-	// let url2 = randomImageURL();
+	// let url1 = 'https://source.unsplash.com/ISI5DlnYvuY';
+	// let url2 = 'https://source.unsplash.com/0DLKy4IPoc8';
+	let url1 = randomImageURL();
+	let url2 = randomImageURL();
 
 	let image1, image2;
 	let kernel;
@@ -52,7 +30,7 @@
 			const hash = window.location.hash.slice(1);
 			for (let i = 0; i < MODES.length; i++) {
 				const mode = MODES[i];
-				if (mode.value.toLowerCase() === hash) {
+				if (mode.value.toLowerCase() === hash.toLowerCase()) {
 					return mode;
 				}
 			}
@@ -102,8 +80,8 @@
 				context: canvas.getContext('webgl', { preserveDrawingBuffer: true })
 			});
 
-			gpu.addFunction(kernels.min);
-			gpu.addFunction(kernels.max);
+			gpu.addFunction(kernels.minimum);
+			gpu.addFunction(kernels.maximum);
 			gpu.addFunction(kernels.mmm);
 			gpu.addFunction(kernels.lum);
 			gpu.addFunction(kernels.clipColor);
@@ -146,20 +124,23 @@
 </script>
 
 <main>
-	<h1>Blend Modes</h1>
+	<header>
+		<div class="title">
+			<h1>Blend Modes</h1>
+		</div>
+	</header>
 	<div class="container">
 		<div class="source-images">
 			<div class="image-container">
+				<h3>Backdrop</h3>
 				<div class="image-buttons">
 					<div>
-						<button 
-							class="btn bg-red" 
+						<Button 
 							on:click={() => {
 								url1 = randomImageURL();
-							}}
-						>
+							}}>
 							Random
-						</button>
+						</Button>
 					</div>
 					<UploadImage onLoad={(src) => {
 						url1 = src;
@@ -179,16 +160,15 @@
 				/>
 			</div>
 			<div class="image-container">
+				<h3>Source</h3>
 				<div class="image-buttons">
 					<div>
-						<button 
-							class="btn bg-red" 
+						<Button 
 							on:click={() => {
 								url2 = randomImageURL();
-							}}
-						>
+							}}>
 							Random
-						</button>
+						</Button>
 					</div>
 					<UploadImage onLoad={(src) => {
 						url2 = src;
@@ -208,29 +188,32 @@
 				/>
 			</div>
 		</div>
-		<div>
+		<div class="output">
+				<section class="about">
+				<h2>About</h2>
+				<a href="https://twitter.com/srmullen?ref_src=twsrc%5Etfw" class="twitter-follow-button"
+					data-show-count="false">Follow
+					@srmullen</a>
+				<script async src="https://platform.twitter.com/widgets.js" charset="utf-8"></script>
+				<div>
+					Image blending modes are a way of combining two images into one image that maintains characteristics of the original images.
+					This site implements the blend modes as described in the W3C specification. They are rendered to a canvas using <a href="https://gpu.rocks/">GPU.js</a>.
+					For more information you can see the <a href="https://github.com/srmullen/blend_modes">Github repo</a> and the <a href="https://srmullen.com/articles/blend-modes">blog post</a> describing the blend mode implementations.
+				</div>
+			</section>
 			<div class="inputs-container">
-				<div class="select-container">
-					<Select options={MODES} bind:selected={mode} on:change={onModeChange} />
-				</div>
-				{#if mode.value === 'overlay' || mode.value === 'random_component'}
-					<div class="slider-container">
-						<label for="cutoff-slider">Cutoff</label>
-						<input 
-							id="cutoff-slider"
-							type="range" 
-							min="0" 
-							max="1" 
-							step="0.01" 
-							bind:value={cutoff} 
-							class="slider" 
-							on:input={runKernel}
-						/>
+				<label>
+					<h3>Blend Mode</h3>
+					<div class="select-container">
+						<Select options={MODES} bind:selected={mode} on:change={onModeChange} />
 					</div>
-				{/if}
-				<div class="download">
-					<button on:click={() => saveImage(canvas)} class="btn bg-blue">Download</button>
-				</div>
+				</label>
+			</div>
+			<section class="description">
+				{mode.description}
+			</section>
+			<div class="download">
+				<Button color='blue' on:click={() => saveImage(canvas)} class="btn bg-blue">Download</Button>
 			</div>
 			<div class='canvas-container'></div>
 		</div>
@@ -243,8 +226,25 @@
 		padding: 28px;
 	}
 
-	$body-color: #fff;
-	$top-padding: 10px;
+	main {
+		max-width: 1300px;
+		margin: auto;
+	}
+
+	header {
+		width: 100%;
+		display: flex;
+	}
+
+	.title {
+		width: 38.2%;
+		min-width: 50px;
+	}
+
+	h1, h2, h3 {
+		margin: 0;
+	}
+
 	$primary-color: rgb(214, 3, 3);
 	$green: green;
 	$blue: rgb(39, 70, 247);
@@ -253,8 +253,20 @@
 		display: flex;
 	}
 
+	.output {
+		width: 50%;
+		margin: auto;
+	}
+
+	.about {
+		h2 {
+			display: inline;
+			padding-right: 12px;
+		}
+	}
+
 	.download {
-		padding-top: 12px;
+		padding: 12px 0;
 	}
 
 	.source-images {
@@ -280,67 +292,24 @@
 	.inputs-container {
 		display: flex;
 		justify-content: space-between;
+		margin-top: 12px;
 	}
 
 	.image-buttons {
 		display: flex;
 		* {
 			margin-right: 8px;
+			margin-bottom: 8px;
 		}
 	}
 
 	.color-picker {
 		margin-left: 8px;
-		margin-top: -2px;
 	}
 
-	.bg-red {
-		background-color: $primary-color;
-	}
-
-	.bg-green {
-		background-color: $green;
-	}
-
-	.bg-blue {
-		background-color: $blue;
-	}
-
-	.btn {
-		margin: 0;
-		border: none;
-		border-radius: 0;
-		padding: 10px;
-		color: #fff;
-		font-family: 'Courier New', Courier, monospace;
-		font-weight: 550;
-		letter-spacing: 0.3px;
-		font-size: 14px;
-		&.bg-red {
-			&:hover {
-				background-color: lighten($color: $primary-color, $amount: 5);
-				opacity: 0.7;
-			}
-		}
-
-		&.bg-green {
-			&:hover {
-				background-color: lighten($color: $green, $amount: 5);
-				opacity: 0.7;
-			}
-		}
-
-		&.bg-blue {
-			&:hover {
-				background-color: lighten($color: $blue, $amount: 5);
-				opacity: 0.7;
-			}
-		}
-	}
-
-	@media (min-width: 640px) {
-		main {
-			max-width: none;
-		}
-	}
+	// @media (min-width: 640px) {
+	// 	main {
+	// 		max-width: none;
+	// 	}
+	// }
 </style>

@@ -2,11 +2,11 @@
  * Functions
  **/
 
-export function min(pix) {
+export function minimum(pix) {
   return Math.min(pix[0], Math.min(pix[1], pix[2]));
 }
 
-export function max(pix) {
+export function maximum(pix) {
   return Math.max(pix[0], Math.max(pix[1], pix[2]));
 }
 
@@ -53,8 +53,8 @@ export function lum(pix) {
 
 export function clipColor(pix) {
   const l = lum(pix);
-  const n = min(pix);
-  const x = max(pix);
+  const n = minimum(pix);
+  const x = maximum(pix);
 
   let c = [pix[0], pix[1], pix[2], 1];
 
@@ -74,7 +74,7 @@ export function clipColor(pix) {
 }
 
 export function sat(pix) {
-  return max(pix) - min(pix);
+  return maximum(pix) - minimum(pix);
 }
 
 export function setLum(pix, l) {
@@ -348,7 +348,6 @@ export function softLight(img1, img2) {
   } else {
     let d = 0;
     if (pix1[0] <= 0.25) {
-      // ((16 * Cb - 12) x Cb + 4) x Cb
       d = ((16 * pix1[0] - 12) * pix1[0] + 4) * pix1[0];
     } else {
       d = Math.sqrt(pix1[0]);

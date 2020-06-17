@@ -5,7 +5,6 @@
 </script>
 
 <img 
-  bind:this={image}
   class="visible" 
   {src} 
   {alt} 

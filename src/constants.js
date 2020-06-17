@@ -49,23 +49,18 @@ export const MODES = [
   { 
     name: 'Color Burn', 
     value: 'colorBurn',
-    description: ''
+    description: 'Darkens the backdrop color by increasing the contrast with the source color.'
    },
   { 
     name: 'Linear Burn', 
     value: 'linearBurn',
-    description: ''
+    description: 'Darkens the backdrop color based on the brightness of the source pixel.'
    },
   { 
     name: 'Color Dodge', 
     value: 'colorDodge',
-    description: ''
+    description: 'Brightens the backdrop color by decreasing the contrast with the source color.'
    },
-  // { 
-  //   name: 'Random', 
-  //   value: 'random_component',
-  //   description: ''
-  // },
   { 
     name: 'Difference', 
     value: 'difference',
@@ -74,31 +69,31 @@ export const MODES = [
   { 
     name: 'Soft Light', 
     value: 'softLight',
-    description: ''
+    description: 'Related to the Hard Light blend mode because it darkens or lightens based on the source pixel. Dampens the amount of burning or dodging at the extremes to prevent pure black or white.'
    },
   { 
     name: 'Exclusion', 
     value: 'exclusion',
-    description: ''
+    description: 'If the source channel is at full value it inverts the backdrop channel. As the source channel approaches zero the inversion decreases until the output is equal to just the backdrop channel. The effect is similar to difference but with lower contrast.'
    },
   { 
     name: 'Hue', 
     value: 'hue',
-    description: ''
+    description: 'Convert the pixel to HSL color mode. Use the hue of the source color and the saturation and luminosity of the backdrop color.'
    },
   { 
     name: 'Saturation', 
     value: 'saturation',
-    description: ''
+    description: 'Convert the pixel to HSL color mode. Use the saturation of the source color and the hue and luminosity of the backdrop color.'
    },
   { 
     name: 'Luminosity', 
     value: 'luminosity',
-    description: ''
+    description: 'Convert the pixel to HSL color mode. Use the luminosity of the source color and the hue and saturation of the backdrop color.'
    },
   { 
     name: 'Color', 
     value: 'color',
-    description: ''
+    description: 'Convert the pixel to HSL color mode. Use the hue and saturation of the source color and the luminosity of the backdrop color.'
   }
 ];

@@ -75,7 +75,37 @@ export const MODES = [
     name: 'Exclusion', 
     value: 'exclusion',
     description: 'If the source channel is at full value it inverts the backdrop channel. As the source channel approaches zero the inversion decreases until the output is equal to just the backdrop channel. The effect is similar to difference but with lower contrast.'
-   },
+  },
+  {
+    name: 'Hard Mix',
+    value: 'hardMix',
+    description: 'For each channel, add the backdrop and source values. If the result is greater than one the channel receives a value of one, otherwise it receives a value of zero.'
+  },
+  {
+    name: 'Lighter Color',
+    value: 'lighterColor',
+    description: 'Sum the red, green, and blue channels of the backdrop and source pixels. If the backdrop result is greater than the source then the output is the backdrop color, otherwise it is the source color.'
+  },
+  {
+    name: 'Darker Color',
+    value: 'darkerColor',
+    description: 'Sum the red, green, and blue channels of the backdrop and source pixels. If the backdrop result is less than the source then the output is the backdrop color, otherwise it is the source color.'
+  },
+  {
+    name: 'Pin Light',
+    value: 'pinLight',
+    description: 'For each channel, use the source value if the backdrop value is between 0.5 and the source value, otherwise use the backdrop value.'
+  },
+  {
+    name: 'Vivid Light',
+    value: 'vividLight',
+    description: 'For each channel, if the source value is greater than 0.5 apply color dodge, otherwise apply color burn.'
+  },
+  {
+    name: 'Linear Light',
+    value: 'linearLight',
+    description: 'For each channel, if the source value is greater than 0.5 apply linear dodge (add), otherwise apply linear burn.'
+  },
   { 
     name: 'Hue', 
     value: 'hue',

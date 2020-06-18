@@ -404,6 +404,140 @@ export function exclusion(img1, img2) {
   );
 }
 
+export function hardMix(img1, img2) {
+  const pix1 = img1[this.thread.y][this.thread.x];
+  const pix2 = img2[this.thread.y][this.thread.x];
+  const red = (pix1[0] + pix2[0]) > 1.0 ? 1.0 : 0;
+  const green = (pix1[1] + pix2[1]) > 1.0 ? 1.0 : 0;
+  const blue = (pix1[2] + pix2[2]) > 1.0 ? 1.0 : 0;
+  this.color(red, green, blue);
+}
+
+export function lighterColor(img1, img2) {
+  const pix1 = img1[this.thread.y][this.thread.x];
+  const pix2 = img2[this.thread.y][this.thread.x];
+  const total1 = pix1[0] + pix1[1] + pix1[2];
+  const total2 = pix2[0] + pix2[1] + pix2[2];
+  if (total1 > total2) {
+    this.color(pix1[0], pix1[1], pix1[2]);
+  } else {
+    this.color(pix2[0], pix2[1], pix2[2]);
+  }
+}
+
+export function darkerColor(img1, img2) {
+  const pix1 = img1[this.thread.y][this.thread.x];
+  const pix2 = img2[this.thread.y][this.thread.x];
+  const total1 = pix1[0] + pix1[1] + pix1[2];
+  const total2 = pix2[0] + pix2[1] + pix2[2];
+  if (total1 < total2) {
+    this.color(pix1[0], pix1[1], pix1[2]);
+  } else {
+    this.color(pix2[0], pix2[1], pix2[2]);
+  }
+}
+
+export function pinLight(img1, img2) {
+  const pix1 = img1[this.thread.y][this.thread.x];
+  const pix2 = img2[this.thread.y][this.thread.x];
+  let red = pix1[0];
+  if (pix2[0] > 0.5) {
+    if (pix1[0] < pix2[0]) {
+      red = pix2[0];
+    }
+  } else {
+    if (pix1[0] > pix2[0]) {
+      red = pix2[0];
+    }
+  }
+
+  let green = pix1[1];
+  if (pix2[1] > 0.5) {
+    if (pix1[1] < pix2[1]) {
+      green = pix2[1];
+    }
+  } else {
+    if (pix1[1] > pix2[1]) {
+      green = pix2[1];
+    }
+  }
+
+  let blue = pix1[2];
+  if (pix2[2] > 0.5) {
+    if (pix1[2] < pix2[2]) {
+      blue = pix2[2];
+    }
+  } else {
+    if (pix1[2] > pix2[2]) {
+      blue = pix2[2];
+    }
+  }
+
+  this.color(red, green, blue);
+}
+
+export function vividLight(img1, img2) {
+  const pix1 = img1[this.thread.y][this.thread.x];
+  const pix2 = img2[this.thread.y][this.thread.x];
+  let red = 0;
+  if (pix2[0] > 0.5) {
+    // dodge
+    red = Math.min(1, pix1[0] / (1 - pix2[0]))
+  } else {
+    // burn
+    red = 1 - (1 - pix1[0]) / pix2[0];
+  }
+
+  let green = 0;
+  if (pix2[1] > 0.5) {
+    // dodge
+    green = Math.min(1, pix1[1] / (1 - pix2[1]));
+  } else {
+    // burn
+    green = 1 - (1 - pix1[1]) / pix2[1];
+  }
+
+  let blue = 0;
+  if (pix2[2] > 0.5) {
+    // color dodge
+    blue = Math.min(1, pix1[2] / (1 - pix2[2]));
+  } else {
+    // color burn
+    blue = 1 - (1 - pix1[2]) / pix2[2];
+  }
+
+  this.color(red, green, blue);
+}
+
+export function linearLight(img1, img2) {
+  const pix1 = img1[this.thread.y][this.thread.x];
+  const pix2 = img2[this.thread.y][this.thread.x];
+  let red = 0;
+  if (pix2[0] > 0.5) {
+    // linear dodge
+    red = pix1[0] + pix2[0];
+  } else {
+    // linear burn
+    red = pix1[0] + pix2[0] - 1;
+  }
+
+  let green = 0;
+  if (pix2[1] > 0.5) {
+    green = pix1[1] + pix2[1];
+  } else {
+    green = pix1[1] + pix2[1] - 1;
+  }
+
+  let blue = 0;
+  if (pix2[2] > 0.5) {
+    blue = pix1[2] + pix2[2];
+  } else {
+    blue = pix1[2] + pix2[2] - 1;
+  }
+
+  this.color(red, green, blue);
+}
+
 export function hue(img1, img2) {
   const pix1 = img1[this.thread.y][this.thread.x];
   const pix2 = img2[this.thread.y][this.thread.x];
@@ -411,11 +545,6 @@ export function hue(img1, img2) {
   const saturation = sat(pix1);
   const newSat = setSat(pix2, saturation);
   const pix = setLum(newSat, luminosity);
-  // const pix = setLum(setSat(pix2, sat(pix1)), lum(pix1));
-  
-  // this.color(luminosity, luminosity, luminosity);
-  // this.color(saturation, saturation, saturation);
-  // this.color(newSat[0], newSat[1], newSat[2]);
   this.color(pix[0], pix[1], pix[2]);
 }
 
@@ -460,14 +589,3 @@ export function random_component(img1, img2, cutoff) {
   // const pix = Math.random() < cutoff ? pix1 : pix2;
   // this.color(pix[0], pix[1], pix[2]);
 }
-
-// export function createImageKernel(gpu, fn, output, ...args) {
-//   const kernel = gpu.createKernel(fn)
-//     .setGraphical(true)
-//     .setOutput(output)
-//   // .setOutput([image1.width, image1.height]);
-
-//   // kernel(image1, image2);
-//   kernel(...args)
-//   return kernel.getPixels();
-// }

@@ -11,7 +11,7 @@
   onMount(() => {
     picker = new Picker({ 
       parent,
-      alpha: false
+      // alpha: false
     });
 
     picker.onChange = (color) => {

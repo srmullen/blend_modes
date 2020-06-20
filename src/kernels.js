@@ -158,6 +158,18 @@ export function setSat(pix, s) {
   return c;
 }
 
+export function calcAlpha(cb, alphaB, cs, alphaS) {
+  return cs * alphaS + cb * alphaB * (1 - alphaS);
+}
+
+export function applyAlpha(backdrop, source) {
+  return [
+    calcAlpha(backdrop[0], backdrop[3], source[0], source[3]),
+    calcAlpha(backdrop[1], backdrop[3], source[1], source[3]),
+    calcAlpha(backdrop[2], backdrop[3], source[2], source[3]),
+  ];
+}
+
 /**
 * Kernels
 **/
@@ -165,22 +177,39 @@ export function setSat(pix, s) {
 export function add(img1, img2) {
   const pix1 = img1[this.thread.y][this.thread.x];
   const pix2 = img2[this.thread.y][this.thread.x];
-  this.color(
+  const alpha = pix2[3] + pix1[3] * (1 - pix2[3]);
+  const blend = [
     pix1[0] + pix2[0],
     pix1[1] + pix2[1],
     pix1[2] + pix2[2],
-    255
+    pix2[3]
+  ];
+  const alphaB = pix1[3];
+  const alphaS = pix2[3];
+  const composite = applyAlpha(pix1, blend);
+  this.color(
+    composite[0],
+    composite[1],
+    composite[2],
+    1
   );
 }
 
 export function subtract(img1, img2) {
   const pix1 = img1[this.thread.y][this.thread.x];
   const pix2 = img2[this.thread.y][this.thread.x];
-  this.color(
+  const blend = [
     pix1[0] - pix2[0],
     pix1[1] - pix2[1],
     pix1[2] - pix2[2],
-    255
+    pix2[3]
+  ];
+  const composite = applyAlpha(pix1, blend);
+  this.color(
+    composite[0],
+    composite[1],
+    composite[2],
+    1
   );
 }
 
@@ -191,7 +220,7 @@ export function darken(img1, img2) {
     Math.min(pix1[0], pix2[0]),
     Math.min(pix1[1], pix2[1]),
     Math.min(pix1[2], pix2[2]),
-    255
+    1
   );
 }
 

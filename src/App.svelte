@@ -11,10 +11,10 @@
 	import { MODES, CANVAS_STYLE } from "./constants";
 	
 
-	// let url1 = 'https://source.unsplash.com/ISI5DlnYvuY';
-	// let url2 = 'https://source.unsplash.com/0DLKy4IPoc8';
-	let url1 = randomImageURL();
-	let url2 = randomImageURL();
+	let url1 = 'https://source.unsplash.com/ISI5DlnYvuY';
+	let url2 = 'https://source.unsplash.com/0DLKy4IPoc8';
+	// let url1 = randomImageURL();
+	// let url2 = randomImageURL();
 
 	let image1, image2;
 	let kernel;
@@ -77,7 +77,11 @@
 
 			gpu = new GPU({
 				canvas,
-				context: canvas.getContext('webgl', { preserveDrawingBuffer: true })
+				// mode: 'dev',
+				context: canvas.getContext('webgl', { 
+					preserveDrawingBuffer: true,
+					premultipliedAlpha: false
+				})
 			});
 
 			gpu.addFunction(kernels.minimum);
@@ -90,6 +94,8 @@
 			gpu.addFunction(kernels.setSat, {
 				argumentTypes: { pix: 'Array(4)', s: 'Number' }
 			});
+			gpu.addFunction(kernels.calcAlpha);
+			gpu.addFunction(kernels.applyAlpha);
 
 			kernel = gpu.createKernel(kernels[mode.value], {
 				graphical: true,
@@ -116,7 +122,7 @@
 		canvas.height = height;
 		canvas.style = 'display: none;';
 		const ctx = canvas.getContext('2d');
-		ctx.fillStyle = `rgb(${color[0]}, ${color[1]}, ${color[2]})`;
+		ctx.fillStyle = `rgba(${color[0]}, ${color[1]}, ${color[2]}, ${color[3]})`;
 		ctx.fillRect(0, 0, width, height);
 		const img = document.createElement('img');
 		return await canvas.toDataURL('image/png');

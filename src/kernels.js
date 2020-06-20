@@ -216,10 +216,17 @@ export function subtract(img1, img2) {
 export function darken(img1, img2) {
   const pix1 = img1[this.thread.y][this.thread.x];
   const pix2 = img2[this.thread.y][this.thread.x];
-  this.color(
+  const blend = [
     Math.min(pix1[0], pix2[0]),
     Math.min(pix1[1], pix2[1]),
     Math.min(pix1[2], pix2[2]),
+    pix2[3]
+  ];
+  const composite = applyAlpha(pix1, blend);
+  this.color(
+    composite[0],
+    composite[1],
+    composite[2],
     1
   );
 }
@@ -227,21 +234,35 @@ export function darken(img1, img2) {
 export function lighten(img1, img2) {
   const pix1 = img1[this.thread.y][this.thread.x];
   const pix2 = img2[this.thread.y][this.thread.x];
-  this.color(
+  const blend = [
     Math.max(pix1[0], pix2[0]),
     Math.max(pix1[1], pix2[1]),
     Math.max(pix1[2], pix2[2]),
-    255
+    pix2[3]
+  ];
+  const composite = applyAlpha(pix1, blend);
+  this.color(
+    composite[0],
+    composite[1],
+    composite[2],
+    1
   );
 }
 
 export function multiply(img1, img2) {
   const pix1 = img1[this.thread.y][this.thread.x];
   const pix2 = img2[this.thread.y][this.thread.x];
-  this.color(
+  const blend = [
     pix1[0] * pix2[0],
     pix1[1] * pix2[1],
     pix1[2] * pix2[2],
+    pix2[3]
+  ];
+  const composite = applyAlpha(pix1, blend);
+  this.color(
+    composite[0],
+    composite[1],
+    composite[2],
     1
   );
 }
@@ -249,10 +270,17 @@ export function multiply(img1, img2) {
 export function divide(img1, img2) {
   const pix1 = img1[this.thread.y][this.thread.x];
   const pix2 = img2[this.thread.y][this.thread.x];
-  this.color(
+  const blend = [
     pix1[0] / pix2[0],
     pix1[1] / pix2[1],
     pix1[2] / pix2[2],
+    pix2[3]
+  ];
+  const composite = applyAlpha(pix1, blend);
+  this.color(
+    composite[0],
+    composite[1],
+    composite[2],
     1
   );
 }
@@ -260,10 +288,17 @@ export function divide(img1, img2) {
 export function screen(img1, img2) {
   const pix1 = img1[this.thread.y][this.thread.x];
   const pix2 = img2[this.thread.y][this.thread.x];
-  this.color(
+  const blend = [
     1 - (1 - pix1[0]) * (1 - pix2[0]),
     1 - (1 - pix1[1]) * (1 - pix2[1]),
     1 - (1 - pix1[2]) * (1 - pix2[2]),
+    pix2[3]
+  ];
+  const composite = applyAlpha(pix1, blend);
+  this.color(
+    composite[0],
+    composite[1],
+    composite[2],
     1
   );
 }
@@ -299,7 +334,14 @@ export function overlay(img1, img2, cutoff) {
     b = 1 - 2 * (1 - b1) * (1 - b2);
   }
 
-  this.color(r, g, b, 1);
+  const blend = [r, g, b, pix2[3]];
+  const composite = applyAlpha(pix1, blend);
+  this.color(
+    composite[0],
+    composite[1],
+    composite[2],
+    1
+  );
 }
 
 export function hardLight(img1, img2) {
@@ -334,26 +376,48 @@ export function hardLight(img1, img2) {
     b = 1 - 2 * (1 - b1) * (1 - b2);
   }
 
-  this.color(r, g, b, 1);
+  const blend = [r, g, b, pix2[3]];
+  const composite = applyAlpha(pix1, blend);
+  this.color(
+    composite[0],
+    composite[1],
+    composite[2],
+    1
+  );
 }
 
 export function colorBurn(img1, img2) {
   const pix1 = img1[this.thread.y][this.thread.x];
   const pix2 = img2[this.thread.y][this.thread.x];
-  this.color(
+  const blend = [
     1 - (1 - pix1[0]) / pix2[0],
     1 - (1 - pix1[1]) / pix2[1],
-    1 - (1 - pix1[2]) / pix2[2]
+    1 - (1 - pix1[2]) / pix2[2],
+    pix2[3]
+  ];
+  const composite = applyAlpha(pix1, blend);
+  this.color(
+    composite[0],
+    composite[1],
+    composite[2],
+    1
   );
 }
 
 export function linearBurn(img1, img2) {
   const pix1 = img1[this.thread.y][this.thread.x];
   const pix2 = img2[this.thread.y][this.thread.x];
-  this.color(
+  const blend = [
     pix1[0] + pix2[0] - 1,
     pix1[1] + pix2[1] - 1,
     pix1[2] + pix2[2] - 1,
+    pix2[3]
+  ];
+  const composite = applyAlpha(pix1, blend);
+  this.color(
+    composite[0],
+    composite[1],
+    composite[2],
     1
   );
 }
@@ -364,7 +428,14 @@ export function colorDodge(img1, img2) {
   const red = Math.min(1, pix1[0] / (1 - pix2[0]))
   const green = Math.min(1, pix1[1] / (1 - pix2[1]))
   const blue = Math.min(1, pix1[2] / (1 - pix2[2]))
-  this.color(red, green, blue);
+  const blend = [red, green, blue, pix2[3]];
+  const composite = applyAlpha(pix1, blend);
+  this.color(
+    composite[0],
+    composite[1],
+    composite[2],
+    1
+  );
 }
 
 export function softLight(img1, img2) {
@@ -410,26 +481,49 @@ export function softLight(img1, img2) {
     blue = pix1[2] + (2 * pix2[2] - 1) * (d - pix1[2]);
   }
 
-  this.color(red, green, blue);
+  const blend = [red, green, blue, pix2[3]];
+  const composite = applyAlpha(pix1, blend);
+  this.color(
+    composite[0],
+    composite[1],
+    composite[2],
+    1
+  );
 }
 
 export function difference(img1, img2) {
   const pix1 = img1[this.thread.y][this.thread.x];
   const pix2 = img2[this.thread.y][this.thread.x];
-  this.color(
+  const blend = [
     Math.abs(pix1[0] - pix2[0]),
     Math.abs(pix1[1] - pix2[1]),
-    Math.abs(pix1[2] - pix2[2])
+    Math.abs(pix1[2] - pix2[2]),
+    pix2[3]
+  ];
+  const composite = applyAlpha(pix1, blend);
+  this.color(
+    composite[0],
+    composite[1],
+    composite[2],
+    1
   );
 }
 
 export function exclusion(img1, img2) {
   const pix1 = img1[this.thread.y][this.thread.x];
   const pix2 = img2[this.thread.y][this.thread.x];
-  this.color(
+  const blend = [
     pix1[0] + pix2[0] - 2 * pix1[0] * pix2[0],
     pix1[1] + pix2[1] - 2 * pix1[1] * pix2[1],
-    pix1[2] + pix2[2] - 2 * pix1[2] * pix2[2]
+    pix1[2] + pix2[2] - 2 * pix1[2] * pix2[2],
+    pix2[3]
+  ];
+  const composite = applyAlpha(pix1, blend);
+  this.color(
+    composite[0],
+    composite[1],
+    composite[2],
+    1
   );
 }
 
@@ -439,7 +533,14 @@ export function hardMix(img1, img2) {
   const red = (pix1[0] + pix2[0]) > 1.0 ? 1.0 : 0;
   const green = (pix1[1] + pix2[1]) > 1.0 ? 1.0 : 0;
   const blue = (pix1[2] + pix2[2]) > 1.0 ? 1.0 : 0;
-  this.color(red, green, blue);
+  const blend = [red, green, blue, pix2[3]];
+  const composite = applyAlpha(pix1, blend);
+  this.color(
+    composite[0],
+    composite[1],
+    composite[2],
+    1
+  );
 }
 
 export function lighterColor(img1, img2) {
@@ -447,11 +548,19 @@ export function lighterColor(img1, img2) {
   const pix2 = img2[this.thread.y][this.thread.x];
   const total1 = pix1[0] + pix1[1] + pix1[2];
   const total2 = pix2[0] + pix2[1] + pix2[2];
+  const blend = [pix2[0], pix2[1], pix2[2], pix2[3]];
   if (total1 > total2) {
-    this.color(pix1[0], pix1[1], pix1[2]);
-  } else {
-    this.color(pix2[0], pix2[1], pix2[2]);
+    blend[0] = pix1[0];
+    blend[1] = pix1[1];
+    blend[2] = pix1[2];
   }
+  const composite = applyAlpha(pix1, blend);
+  this.color(
+    composite[0],
+    composite[1],
+    composite[2],
+    1
+  );
 }
 
 export function darkerColor(img1, img2) {
@@ -459,11 +568,20 @@ export function darkerColor(img1, img2) {
   const pix2 = img2[this.thread.y][this.thread.x];
   const total1 = pix1[0] + pix1[1] + pix1[2];
   const total2 = pix2[0] + pix2[1] + pix2[2];
+  const blend = [pix2[0], pix2[1], pix2[2], pix2[3]];
   if (total1 < total2) {
-    this.color(pix1[0], pix1[1], pix1[2]);
-  } else {
-    this.color(pix2[0], pix2[1], pix2[2]);
+    // this.color(pix1[0], pix1[1], pix1[2]);
+    blend[0] = pix1[0];
+    blend[1] = pix1[1];
+    blend[2] = pix1[2];
   }
+  const composite = applyAlpha(pix1, blend);
+  this.color(
+    composite[0],
+    composite[1],
+    composite[2],
+    1
+  );
 }
 
 export function pinLight(img1, img2) {
@@ -502,40 +620,48 @@ export function pinLight(img1, img2) {
     }
   }
 
-  this.color(red, green, blue);
+  const blend = [red, green, blue, pix2[3]];
+  const composite = applyAlpha(pix1, blend);
+  this.color(
+    composite[0], 
+    composite[1], 
+    composite[2], 
+    1
+  );
 }
 
 export function vividLight(img1, img2) {
   const pix1 = img1[this.thread.y][this.thread.x];
   const pix2 = img2[this.thread.y][this.thread.x];
   let red = 0;
-  if (pix2[0] > 0.5) {
-    // dodge
+  if (pix2[0] > 0.5) { // dodge
     red = Math.min(1, pix1[0] / (1 - pix2[0]))
-  } else {
-    // burn
+  } else { // burn
     red = 1 - (1 - pix1[0]) / pix2[0];
   }
 
   let green = 0;
   if (pix2[1] > 0.5) {
-    // dodge
     green = Math.min(1, pix1[1] / (1 - pix2[1]));
   } else {
-    // burn
     green = 1 - (1 - pix1[1]) / pix2[1];
   }
 
   let blue = 0;
   if (pix2[2] > 0.5) {
-    // color dodge
     blue = Math.min(1, pix1[2] / (1 - pix2[2]));
   } else {
-    // color burn
     blue = 1 - (1 - pix1[2]) / pix2[2];
   }
 
-  this.color(red, green, blue);
+  const blend = [red, green, blue, pix2[3]];
+  const composite = applyAlpha(pix1, blend);
+  this.color(
+    composite[0],
+    composite[1],
+    composite[2],
+    1
+  );
 }
 
 export function linearLight(img1, img2) {
@@ -564,7 +690,14 @@ export function linearLight(img1, img2) {
     blue = pix1[2] + pix2[2] - 1;
   }
 
-  this.color(red, green, blue);
+  const blend = [red, green, blue, pix2[3]];
+  const composite = applyAlpha(pix1, blend);
+  this.color(
+    composite[0],
+    composite[1],
+    composite[2],
+    1
+  );
 }
 
 export function hue(img1, img2) {
@@ -574,28 +707,56 @@ export function hue(img1, img2) {
   const saturation = sat(pix1);
   const newSat = setSat(pix2, saturation);
   const pix = setLum(newSat, luminosity);
-  this.color(pix[0], pix[1], pix[2]);
+  const blend = [pix[0], pix[1], pix[2], pix2[3]];
+  const composite = applyAlpha(pix1, blend);
+  this.color(
+    composite[0],
+    composite[1],
+    composite[2],
+    1
+  );
 }
 
 export function saturation(img1, img2) {
   const pix1 = img1[this.thread.y][this.thread.x];
   const pix2 = img2[this.thread.y][this.thread.x];
   const pix = setLum(setSat(pix1, sat(pix2)), lum(pix1));
-  this.color(pix[0], pix[1], pix[2]);
+  const blend = [pix[0], pix[1], pix[2], pix2[3]];
+  const composite = applyAlpha(pix1, blend);
+  this.color(
+    composite[0],
+    composite[1],
+    composite[2],
+    1
+  );
 }
 
 export function color(img1, img2) {
   const pix1 = img1[this.thread.y][this.thread.x];
   const pix2 = img2[this.thread.y][this.thread.x];
   const pix = setLum(pix2, lum(pix1));
-  this.color(pix[0], pix[1], pix[2]);
+  const blend = [pix[0], pix[1], pix[2], pix2[3]];
+  const composite = applyAlpha(pix1, blend);
+  this.color(
+    composite[0],
+    composite[1],
+    composite[2],
+    1
+  );
 }
 
 export function luminosity(img1, img2) {
   const pix1 = img1[this.thread.y][this.thread.x];
   const pix2 = img2[this.thread.y][this.thread.x];
   const pix = setLum(pix1, lum(pix2));
-  this.color(pix[0], pix[1], pix[2]);
+  const blend = [pix[0], pix[1], pix[2], pix2[3]];
+  const composite = applyAlpha(pix1, blend);
+  this.color(
+    composite[0],
+    composite[1],
+    composite[2],
+    1
+  );
 }
 
 /**

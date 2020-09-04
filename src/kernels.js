@@ -172,6 +172,24 @@ export const applyAlpha = `function applyAlpha(backdrop, source) {
 * Kernels
 **/
 
+export const normal = `function normal(img1, img2) {
+  const pix1 = img1[this.thread.y][this.thread.x];
+  const pix2 = img2[this.thread.y][this.thread.x];
+  const blend = [
+    pix2[0],
+    pix2[1],
+    pix2[2],
+    pix2[3]
+  ];
+  const composite = applyAlpha(pix1, blend);
+  this.color(
+    composite[0],
+    composite[1],
+    composite[2],
+    1
+  );
+}`
+
 export const add = `function add(img1, img2) {
   const pix1 = img1[this.thread.y][this.thread.x];
   const pix2 = img2[this.thread.y][this.thread.x];

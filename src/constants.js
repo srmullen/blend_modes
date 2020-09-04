@@ -1,6 +1,11 @@
 export const CANVAS_STYLE = 'max-height: 75vh; max-width: 100%;';
 
 export const MODES = [
+  {
+    name: 'Normal',
+    value: 'normal',
+    description: 'Uses only the values from the source pixel.'
+  },
   { 
     name: 'Add', 
     value: 'add',

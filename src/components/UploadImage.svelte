@@ -4,9 +4,6 @@
 
   function onChange() {
     if (this.files && this.files[0]) {
-      // if (!img) {
-      //   img = document.createElement('img');
-      // }
       const img = document.createElement('img');
       const src = URL.createObjectURL(this.files[0]); // set src to blob url
       img.src = src;
@@ -15,7 +12,6 @@
         onLoad(src);
       };
       img.onerror = onerror;
-      // document.body.appendChild(img);
       const source = document.querySelector('.source');
       source.appendChild(img);
     }

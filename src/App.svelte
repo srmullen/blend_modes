@@ -10,6 +10,7 @@
 	import Button from './components/Button.svelte';
 	import { MODES, CANVAS_STYLE } from "./constants";
 	
+	console.log(MODES);
 
 	let url1 = 'https://source.unsplash.com/ISI5DlnYvuY';
 	let url2 = 'https://source.unsplash.com/0DLKy4IPoc8';
@@ -227,7 +228,10 @@
 </main>
 
 <style type="text/scss">
-
+	$primary-color: rgb(214, 3, 3);
+	$green: green;
+	$blue: rgb(39, 70, 247);
+	
 	:global(body) {
 		padding: 28px;
 	}
@@ -250,10 +254,6 @@
 	h1, h2, h3 {
 		margin: 0;
 	}
-
-	$primary-color: rgb(214, 3, 3);
-	$green: green;
-	$blue: rgb(39, 70, 247);
 
 	.container {
 		display: flex;

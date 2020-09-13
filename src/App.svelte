@@ -10,8 +10,6 @@
 	import Button from './components/Button.svelte';
 	import { MODES, CANVAS_STYLE } from "./constants";
 	
-	console.log(MODES);
-
 	let url1 = 'https://source.unsplash.com/ISI5DlnYvuY';
 	let url2 = 'https://source.unsplash.com/0DLKy4IPoc8';
 	// let url1 = randomImageURL();
@@ -227,7 +225,7 @@
 	</div>
 </main>
 
-<style type="text/scss">
+<style lang="scss">
 	$primary-color: rgb(214, 3, 3);
 	$green: green;
 	$blue: rgb(39, 70, 247);

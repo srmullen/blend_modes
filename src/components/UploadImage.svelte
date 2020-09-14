@@ -56,6 +56,7 @@
 		font-family: 'Courier New', Courier, monospace;
 		font-weight: 550;
 		letter-spacing: 0.3px;
+		white-space: nowrap;
 		font-size: 14px;
 		display: block;
 		cursor: pointer;

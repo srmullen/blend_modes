@@ -135,6 +135,32 @@
 		</div>
 	</header>
 	<div class="container">
+		<div class="text">
+			<section class="about">
+				<h2>About</h2>
+				<a href="https://twitter.com/srmullen?ref_src=twsrc%5Etfw" class="twitter-follow-button"
+					data-show-count="false">Follow
+					@srmullen</a>
+				<script async src="https://platform.twitter.com/widgets.js" charset="utf-8"></script>
+				<div>
+					Image blending modes are a way of combining two images into one image that maintains characteristics of the original images.
+					This site implements the blend modes as described in the W3C specification. They are rendered to a canvas using <a href="https://gpu.rocks/">GPU.js</a>.
+					For more information you can see the <a href="https://github.com/srmullen/blend_modes">Github repo</a> and the <a href="https://srmullen.com/articles/blend-modes">blog post</a> describing the blend mode implementations.
+				</div>
+			</section>
+			<div class="inputs-container">
+				<label>
+					<h3>Blend Mode</h3>
+					<div class="select-container">
+						<Select options={MODES} bind:selected={mode} on:change={onModeChange} />
+					</div>
+				</label>
+			</div>
+			<section class="description">
+				{mode.description}
+			</section>
+		</div>
+		
 		<div class="source-images">
 			<div class="image-container">
 				<h3>Backdrop</h3>
@@ -193,30 +219,9 @@
 				/>
 			</div>
 		</div>
+
 		<div class="output">
-				<section class="about">
-				<h2>About</h2>
-				<a href="https://twitter.com/srmullen?ref_src=twsrc%5Etfw" class="twitter-follow-button"
-					data-show-count="false">Follow
-					@srmullen</a>
-				<script async src="https://platform.twitter.com/widgets.js" charset="utf-8"></script>
-				<div>
-					Image blending modes are a way of combining two images into one image that maintains characteristics of the original images.
-					This site implements the blend modes as described in the W3C specification. They are rendered to a canvas using <a href="https://gpu.rocks/">GPU.js</a>.
-					For more information you can see the <a href="https://github.com/srmullen/blend_modes">Github repo</a> and the <a href="https://srmullen.com/articles/blend-modes">blog post</a> describing the blend mode implementations.
-				</div>
-			</section>
-			<div class="inputs-container">
-				<label>
-					<h3>Blend Mode</h3>
-					<div class="select-container">
-						<Select options={MODES} bind:selected={mode} on:change={onModeChange} />
-					</div>
-				</label>
-			</div>
-			<section class="description">
-				{mode.description}
-			</section>
+			<h3>Output</h3>
 			<div class="download">
 				<Button color='blue' on:click={() => saveImage(canvas)} class="btn bg-blue">Download</Button>
 			</div>
@@ -254,12 +259,35 @@
 	}
 
 	.container {
+		display: grid;
+		grid-template-columns: 1fr 1fr;
+		grid-template-rows: 1fr 1fr;
+		grid-template-areas: 
+			"sources text"
+			"sources output"
+		;
+	}
+
+	.text {
+		grid-area: text;
+		padding-top: 50px;
+		margin: auto;
+	}
+
+	.source-images {
 		display: flex;
+		flex-direction: column;
+		flex-wrap: nowrap;
+		justify-content: space-around;
+		grid-area: sources;
+	}
+
+	.image-container {
+		margin: 16px 16px 16px 0;
 	}
 
 	.output {
-		width: 50%;
-		margin: auto;
+		grid-area: output;
 	}
 
 	.about {
@@ -270,20 +298,7 @@
 	}
 
 	.download {
-		padding: 12px 0;
-	}
-
-	.source-images {
-		display: flex;
-		flex-direction: column;
-		justify-content: space-around;
-		width: 38.2%;
-		min-width: 250px;
-	}
-
-	.image-container {
-		margin: 16px 16px 16px 0;
-
+		padding: 0 0 12px 0;
 	}
 
 	.select-container {
@@ -311,9 +326,26 @@
 		margin-left: 8px;
 	}
 
-	// @media (min-width: 640px) {
-	// 	main {
-	// 		max-width: none;
-	// 	}
-	// }
+	@media (max-width: 800px) {
+		.container {
+			grid-template-columns: 1fr;
+			grid-template-rows: auto auto auto;
+			grid-template-areas: 
+				"text"
+				"sources"
+				"output"
+			;
+		}
+
+		.source-images {
+			flex-direction: row;
+		}
+	}
+
+	@media (max-width: 620px) {
+		.source-images {
+			flex-direction: column;
+			justify-content: start;
+		}
+	}
 </style>

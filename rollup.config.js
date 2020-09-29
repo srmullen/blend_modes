@@ -24,6 +24,7 @@ export default {
 			targets: [
 				{ src: 'public/index.html', dest: 'dist/'},
 				{ src: 'public/favicon.ico', dest: 'dist/' },
+				{ src: 'public/blendmode.jpeg', dest: 'dist/' },
 				{ src: 'public/global.css', dest: 'dist/' }
 			]
 		}),

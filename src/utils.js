@@ -22,7 +22,7 @@ export function createCanvas(
 
 export function randomImageURL() {
   const randomString = Math.random().toString(36).substring(2);
-  return `https://picsum.photos/1333/1000?_=${randomString}`;
+  return `https://picsum.photos/1500/1000?_=${randomString}`;
 }
 
 export function randomImage() {

@@ -10,10 +10,10 @@
 	import Button from './components/Button.svelte';
 	import { MODES, CANVAS_STYLE } from "./constants";
 	
-	let url1 = 'https://source.unsplash.com/ISI5DlnYvuY';
-	let url2 = 'https://source.unsplash.com/0DLKy4IPoc8';
-	// let url1 = randomImageURL();
-	// let url2 = randomImageURL();
+	// let url1 = 'https://source.unsplash.com/ISI5DlnYvuY';
+	// let url2 = 'https://source.unsplash.com/0DLKy4IPoc8';
+	let url1 = randomImageURL();
+	let url2 = randomImageURL();
 
 	let image1, image2;
 	let kernel;

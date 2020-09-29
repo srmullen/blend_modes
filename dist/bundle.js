@@ -20397,7 +20397,7 @@ highp float nrand(highp vec2 n) {
 
     function randomImageURL() {
       const randomString = Math.random().toString(36).substring(2);
-      return `https://picsum.photos/1333/1000?_=${randomString}`;
+      return `https://picsum.photos/1500/1000?_=${randomString}`;
     }
 
     function saveImage(canvas, { filename = 'blendmode.jpeg' } = {}) {
@@ -24077,13 +24077,9 @@ highp float nrand(highp vec2 n) {
     }
 
     function instance$5($$self, $$props, $$invalidate) {
-    	let url1 = "https://source.unsplash.com/ISI5DlnYvuY";
-    	let url2 = "https://source.unsplash.com/0DLKy4IPoc8";
-
-    	// let url1 = randomImageURL();
-    	// let url2 = randomImageURL();
+    	let url1 = randomImageURL();
+    	let url2 = randomImageURL();
     	let image1, image2;
-
     	let kernel;
     	let canvas;
     	let cutoff = 0.5;

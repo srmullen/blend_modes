@@ -28,7 +28,7 @@
     "dat.gui": "^0.7.7",
     "gpu.js": "^2.9.4",
     "lodash.throttle": "^4.1.1",
-    "postcss": "^7.0.32",
+    "postcss": "^7.0.36",
     "rollup-plugin-serve": "^1.0.4",
     "sirv-cli": "^0.4.4",
     "vanilla-picker": "^2.10.1"
